@@ -61,11 +61,15 @@ class MinecraftSession:
     Set ``new`` and ``client`` if you haven't used the ``login`` method.
     """
     if not new:
+      if self.access_token is None:
+        return False
       session_id = self.access_token
     else:
       session_id = new
 
     if not client:
+      if self.client_token is None:
+        return False
       client_name = self.client_token
     else:
       client_name = client
@@ -81,7 +85,7 @@ class MinecraftSession:
     try:
       req = urllib2.Request(url='https://authserver.mojang.com/refresh', data=json.dumps(data), headers={"Content-Type": "application/json"})
       response = json.loads(urllib2.urlopen(req).read())
-    except:
+    except urllib2.HTTPError, err:
       if err.code == 403:
         return False
       raise
@@ -96,6 +100,8 @@ class MinecraftSession:
     Set ``new`` equal to your session token if you haven't used the ``login`` method.
     """
     if not new:
+      if self.access_token is None:
+        return False
       session_id = self.access_token
     else:
       session_id = new
